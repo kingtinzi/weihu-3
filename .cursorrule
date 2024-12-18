@@ -1,0 +1,81 @@
+- 项目简介
+    - 需要一个财务信息管理系统，具备以下功能：
+        1. 信息录入与更新
+        2. 信息修改
+        3. 统计功能
+        4. 管理功能
+        5. 显示财务基本情况
+- 技术栈
+    - 前端技术栈
+        - Vue.js
+        - Tailwind CSS
+        - TypeScript
+        - Vite
+        - Vue Router
+        - Axios
+    - 后端技术栈
+        - Django
+        - Django Rest Framework
+        - MySQL 
+    - 部署
+        - Docker
+        - Nginx
+- 文件结构
+    - 前端
+src/
+├── assets/          # 静态资源
+├── components/      # 公共组件
+├── router/          # 路由配置
+│   └── index.ts
+├── store/           # 状态管理
+│   └── modules/
+│       └── user.ts
+├── types/           # TypeScript 类型定义
+│   └── index.ts
+├── utils/          # 工具函数
+│   └── request.ts
+├── views/          # 页面组件
+│   ├── auth/
+│   │   └── Login.vue
+│   └── dashboard/
+│       └── index.vue
+├── App.vue         # 根组件
+└── main.ts         # 入口文件
+    - 后端
+        - 
+- 编码规范
+    - typeScript 类型定义规范
+        - 避免使用 any 类型
+        - 如果确实需要 any 类型，请使用@ts-ignore 注释说明原因
+    - 组件编写规范
+        - 组件拆分
+    - 状态管理规范
+    - 样式编写规范
+    - TAILWIND CSS 使用规范
+        - 抽取常用样式样式组合为自定义类
+        - 使用 tailwind 的 class 方式编写样式
+        - 使用@apply指令组织复杂样式
+        - 保持类名顺序一致性
+    - 后端代码规范
+        - 实现统一的错误处理中间件
+        - 定义标准的错误响应格式
+        - 使用统一的日志记录和格式
+    - 路由组织
+        - 使用RESTful规范组织路由
+        - 拆分控制器逻辑
+    - 代码注释
+        - 使用JSDoc注释
+        - 注释清晰、准确、简洁
+- 安全
+    - 使用HTTPS协议
+    - 使用安全的密码存储和传输
+    - 使用安全的API密钥和令牌
+    - 使用安全的用户认证和授权
+- 性能
+    - 使用缓存机制
+    - 使用异步处理
+    - 使用数据库索引
+    - 使用数据库优化查询
+- 测试
+    - 为每个api编写单元测试
+ 
