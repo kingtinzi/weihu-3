@@ -1,6 +1,7 @@
    <!-- src/Main.vue -->
    <template>
     <div id="app">
+      <!-- <Navbar v-if="showNavbar"/> -->
       <router-view></router-view> <!-- 用于渲染路由组件 -->
     </div>
   </template>

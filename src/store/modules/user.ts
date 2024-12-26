@@ -35,21 +35,21 @@ export const useUserStore = defineStore('user', {
       this.userInfo = userInfo
     },
     
-    //**
-    //用户登录方法，调用登录 API 并设置 token 和用户信息
-    //@param username - 用户名
-    // @param password - 密码
-    //* @returns 登录是否成功//
-    
+    /**
+     * 用户登录方法，调用登录 API 并设置 token 和用户信息
+     * @param username - 用户名
+     * @param password - 密码
+     * @returns 登录是否成功
+     */
     async login(username: string, password: string) {
       try {
-        // 这里调用登录API
+        // 调用实际登录 API
         const { token, userInfo } = await loginApi({ username, password })
         this.setToken(token)
         this.setUserInfo(userInfo)
         return true
       } catch (error) {
-        // 登录失败，返回 false
+        console.error('登录失败:', error)
         return false
       }
     },
@@ -68,6 +68,7 @@ export const useUserStore = defineStore('user', {
         this.setUserInfo(userInfo)
         return userInfo
       } catch (error) {
+        console.error('获取用户信息失败:', error)
         return null
       }
     }

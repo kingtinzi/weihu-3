@@ -5,7 +5,7 @@
     <!-- Logo区域 -->
     <div class="logo-section">
       <img 
-        src="@/assets/logo.svg" 
+        src="@/assets/logo.png" 
         alt="微鹄科技" 
         class="logo-img" 
       />
@@ -152,17 +152,24 @@ const handleLoginError = (error: any) => {
   }
 }
 
+interface LoginResponse {
+       success: boolean
+       token: string
+     }
 // 模拟登录请求
+import axios from 'axios'
+
+
 const loginRequest = async (form: LoginForm): Promise<LoginResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (form.mobile === '12345678901' && form.password === 'password') {
-        resolve({ success: true, token: 'mock-token' });
-      } else {
-        resolve({ success: false, token: '' });
-      }
-    }, 1000);
-  });
+  try {
+    const response = await axios.post<LoginResponse>('/api/login', {
+      mobile: form.mobile,
+      password: form.password,
+    })
+    return response.data
+  } catch (error) {
+    throw error
+  }
 }
 </script>
 

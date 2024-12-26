@@ -1,9 +1,20 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Login from '@/Auth/Login.vue'  // 导入Login组件
 import { useUserStore } from '@/store/modules/user'
+import Home from '@/Home.vue'
+import Employee from '@/Auth/EmployeeManagement.vue'
 
 // 定义路由规则
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/EmployeeManagement',
+    name: 'EmployeeManagement',
+    component: Employee,
+    meta: {
+      title: '用工管理',
+      requiresAuth: false  // 标记该页面不需要认证
+    }
+  },
   {
     path: '/login',
     name: 'Login',
@@ -11,6 +22,15 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: '登录',
       requiresAuth: false  // 标记该页面不需要认证
+    }
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: Home,
+    meta: {
+      title: '首页',
+      // requiresAuth: false  // 标记该页面不需要认证
     }
   },
   {
