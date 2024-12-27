@@ -1,303 +1,317 @@
+<!-- src/Auth/EmployeeManagement.vue -->
 <template>
-    <div class="min-h-screen bg-gray-50">
-      <!-- 顶部导航 -->
-      <Navbar />
-      <div style="height: 5vh;"></div>
-      <!-- 主要内容区 -->
-      <div class="pt-16 px-4 pb-20">
-        <!-- 搜索栏 -->
-        <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <div class="flex items-center gap-4">
-            <el-input
-              v-model="searchText"
-              placeholder="搜索员工姓名或工号"
-              class="max-w-md"
-              @keyup.enter="onSearch"
-              prefix-icon="el-icon-search"
-            ></el-input>
-            <el-button type="primary" @click="showAddModal = true">
-              添加员工
-            </el-button>
-          </div>
-        </div>
-    
-        <!-- 员工列表 -->
-        <div class="bg-white rounded-lg shadow-sm p-4">
-          <el-table
-            :data="employees"
-            :pagination="{ pageSize: 10 }"
-            class="w-full"
-          >
-            <el-table-column prop="employeeId" label="工号" />
-            <el-table-column prop="name" label="姓名" />
-            <el-table-column prop="department" label="部门" />
-            <el-table-column prop="position" label="职位" />
-            <el-table-column prop="status" label="状态" />
-            <el-table-column label="操作">
-              <template #default="scope">
-                <div class="space-x-2">
-                  <el-button type="link" @click="handleEdit(scope.row)">
-                    编辑
-                  </el-button>
-                  <el-button type="link" danger @click="handleDelete(scope.row)">
-                    删除
-                  </el-button>
-                </div>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </div>
-    
-      <!-- 添加/编辑员工弹窗 -->
-      <el-dialog
-        v-model:visible="showAddModal"
-        :title="editingEmployee ? '编辑员工' : '添加员工'"
-        @confirm="handleSubmit"
-        @cancel="resetForm"
-        width="600px"
-      >
-        <el-form :model="formState" layout="vertical">
-          <div class="grid grid-cols-2 gap-4">
-            <el-form-item label="工号" prop="employeeId">
-              <el-input v-model="formState.employeeId" placeholder="请输入工号" />
-            </el-form-item>
-            <el-form-item label="姓名" prop="name">
-              <el-input v-model="formState.name" placeholder="请输入姓名" />
-            </el-form-item>
-            <el-form-item label="身份证号" prop="idCard">
-              <el-input v-model="formState.idCard" placeholder="请输入身份证号" />
-            </el-form-item>
-            <el-form-item label="手机号" prop="phone">
-              <el-input v-model="formState.phone" placeholder="请输入手机号" />
-            </el-form-item>
-            <el-form-item label="部门" prop="department">
-              <el-select v-model="formState.department" placeholder="请选择部门">
-                <el-option value="技术部" label="技术部"></el-option>
-                <el-option value="人力资源部" label="人力资源部"></el-option>
-                <el-option value="市场部" label="市场部"></el-option>
-                <el-option value="财务部" label="财务部"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="职位" prop="position">
-              <el-select v-model="formState.position" placeholder="请选择职位">
-                <el-option value="开发工程师" label="开发工程师"></el-option>
-                <el-option value="产品经理" label="产品经理"></el-option>
-                <el-option value="设计师" label="设计师"></el-option>
-                <el-option value="运营专员" label="运营专员"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="系统角色" prop="role">
-            <el-select v-model="formState.role" placeholder="请选择系统角色">
-              <el-option value="管理员" label="管理员"></el-option>
-              <el-option value="普通用户" label="普通用户"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="当前状态" prop="status">
-            <el-select v-model="formState.status" placeholder="请选择状态">
-              <el-option value="在职" label="在职"></el-option>
-              <el-option value="离职" label="离职"></el-option>
-              <el-option value="试用期" label="试用期"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="入职日期" prop="entryDate">
-            <el-date-picker v-model="formState.entryDate" style="width: 100%"></el-date-picker>
-          </el-form-item>
-          <el-form-item label="离职日期" prop="leaveDate">
-            <el-date-picker v-model="formState.leaveDate" style="width: 100%"></el-date-picker>
-          </el-form-item>
-        </div>
-        <el-form-item label="联系地址" prop="address">
-          <el-input
-            type="textarea"
-            v-model="formState.address"
-            rows="2"
-            placeholder="请输入联系地址"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+  <!-- 顶部导航 -->
+  <Navbar />  
+  <div style="height: 10vh;"></div>
   
-    <!-- 批量导入弹窗 -->
-    <el-dialog
-      v-model:visible="showImportModal"
-      title="批量导入"
-      @confirm="handleImport"
-      @cancel="showImportModal = false"
-    >
-      <el-upload-dragger
-        action="/upload"
-        :on-success="handleUploadSuccess"
-        :on-error="handleUploadError"
-        :before-upload="beforeUpload"
-        :file-list="fileList"
-      >
-        <i class="el-icon-inbox"></i>
-        <div class="el-upload__text">点击或拖拽文件到此区域上传</div>
-        <div class="el-upload__hint">支持 .xlsx, .xls 格式的Excel文件</div>
-      </el-upload-dragger>
-    </el-dialog>
-  
-    <!-- 底部工具栏 -->
-    <Bottombar />
+  <!-- 功能操作区 -->
+  <div class="flex justify-between mb-4">
+    <!-- 搜索框 -->
+    <input type="text" placeholder="请输入员工姓名或工号" class="border p-2 rounded" v-model="searchQuery" />
+    <button class="bg-blue-500 text-white p-2 rounded" icon="el-icon-search" @click="handleSearch">搜索</button>
+    
+    <!-- 操作按钮 -->
+    <div class="flex items-center">
+      <button class="bg-blue-500 text-white p-2 rounded mr-2" @click="openAddEmployeeModal">
+        添加员工
+      </button>
+      <!-- <AddEmployee v-if="isAddEmployeeModalVisible" @close="isAddEmployeeModalVisible = false" /> -->
+      <AddEmployee :is-visible="isAddEmployeeModalVisible"
+        @update:is-visible="isAddEmployeeModalVisible = $event"
+        @submit-success="handleEmployeeAdded"/>
+      <button class="bg-green-500 text-white p-2 rounded" @click="openImportModal">
+        批量导入
+      </button>
+    </div>
   </div>
+
+  <!-- 员工列表展示区 -->
+  <div class="table-container">
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr>
+          <th class="py-2">工号</th>
+          <th class="py-2">姓名</th>
+          <th class="py-2">部门</th>
+          <th class="py-2">职位</th>
+          <th class="py-2">状态</th>
+          <th class="py-2">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(employee, index) in employees" :key="index" class="hover:bg-gray-100">
+          <td class="py-2">{{ employee.id }}</td>
+          <td class="py-2">{{ employee.name }}</td>
+          <td class="py-2">{{ employee.department }}</td>
+          <td class="py-2">{{ employee.position }}</td>
+          <td class="py-2">{{ employee.status }}</td>
+          <td class="action-column">
+            <button class="text-blue-500" @click="openEditEmployeeModal(employee)">编辑</button>
+            <button class="text-red-500 ml-2" @click="confirmDelete(employee)">离职</button>
+          </td>
+        </tr>
+      </tbody>
+    </table> 
+  </div>
+
+  <!-- 加载更多按钮或提示 -->
+  <div style="height: 10vh;">
+    <div v-if="loadingMore" class="loading-text">加载更多...</div>
+  </div>
+
+  <!-- 底部工具栏 -->
+  <Bottombar />
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, reactive } from 'vue';
-import { ElMessage, ElForm } from 'element-plus';
-import dayjs from 'dayjs'; // 确保你已经安装了dayjs
+<script>
 import Navbar from '@/components/layout/Navbar.vue';
 import Bottombar from '@/components/layout/Bottombar.vue';
+import AddEmployee from '@/Auth/AddEmployee.vue';
 
-export default defineComponent({
+export default {
+  name: 'EmployeeManagement',
   components: {
     Navbar,
     Bottombar,
-    ElForm
+    AddEmployee,
   },
-  setup() {
-    const avatarUrl = 'https://ai-public.mastergo.com/ai/img_res/a9236609cf629441425c1228db3ca563.jpg';
-
-    const searchText = ref('');
-    const showAddModal = ref(false);
-    const showImportModal = ref(false);
-    const editingEmployee = ref(null);
-    const fileList = ref([]);
-
-    const formState = reactive({
-      employeeId: '',
-      name: '',
-      department: '',
-      idCard: '',
-      phone: '',
-      position: '',
-      role: '',
-      status: '',
-      address: '',
-      entryDate: null,
-      leaveDate: null,
-    });
-
-    const employees = ref([
-      { key: '1', employeeId: 'EMP001', name: '陈思远', department: '技术部', position: '开发工程师', status: '在职' },
-      { key: '2', employeeId: 'EMP002', name: '林美玲', department: '人力资源部', position: '人力资源专员', status: '在职' },
-      { key: '3', employeeId: 'EMP003', name: '王建国', department: '市场部', position: '市场经理', status: '在职' },
-    ]);
-
-    const onSearch = (value: string) => {
-      ElMessage.info(`搜索: ${value}`);
-    };
-
-    const handleEdit = (record: any) => {
-      editingEmployee.value = record;
-      Object.assign(formState, record);
-      showAddModal.value = true;
-    };
-
-    const handleDelete = (record: any) => {
-      employees.value = employees.value.filter((item: any) => item.key !== record.key);
-      ElMessage.success('删除成功');
-    };
-
-    const handleSubmit = () => {
-      if (editingEmployee.value) {
-        const index = employees.value.findIndex((item: any) => item.key === editingEmployee.value.key);
-        employees.value[index] = { ...employees.value[index], ...formState };
-        ElMessage.success('编辑成功');
-      } else {
-        const newEmployee = {
-          key: `${employees.value.length + 1}`,
-          ...formState,
-        };
-        employees.value.push(newEmployee);
-        ElMessage.success('添加成功');
-      }
-      resetForm();
-    };
-
-    const resetForm = () => {
-      editingEmployee.value = null;
-      Object.assign(formState, {
-        employeeId: '',
-        name: '',
-        department: '',
-        idCard: '',
-        phone: '',
-        position: '',
-        role: '',
-        status: '',
-        address: '',
-        entryDate: null,
-        leaveDate: null,
-      });
-      showAddModal.value = false;
-    };
-
-    const handleUploadChange = (info: any) => {
-      if (info.file.status === 'done') {
-        ElMessage.success(`${info.file.name} 文件上传成功`);
-      } else if (info.file.status === 'error') {
-        ElMessage.error(`${info.file.name} 文件上传失败`);
-      }
-    };
-
-    const handleImport = () => {
-      ElMessage.success('导入成功');
-      showImportModal.value = false;
-      fileList.value = [];
-    };
-
-    const handleUploadSuccess = (response: any, file: any, fileList: any[]) => {
-      // Handle upload success
-    };
-
-    const handleUploadError = (err: any, file: any, fileList: any[]) => {
-      // Handle upload error
-    };
-
-    const beforeUpload = (file: File) => {
-      // Perform actions before upload
-      return true; // If return false, the upload will be aborted
-    };
-
+  data() {
     return {
-      searchText,
-      showAddModal,
-      showImportModal,
-      editingEmployee,
-      fileList,
-      formState,
-      employees,
-      onSearch,
-      handleEdit,
-      handleDelete,
-      handleSubmit,
-      resetForm,
-      handleUploadChange,
-      handleImport,
-      handleUploadSuccess,
-      handleUploadError,
-      beforeUpload
+      employees: [
+        { id: '001', name: '张三', department: '技术部', position: '前端开发', status: '在职' },
+        // ... 其他员工数据
+      ],
+      searchQuery: '',
+      loadingMore: false,
+      page: 1,
+      pageSize: 20,
+      searchValue: '',
+      isAddEmployeeModalVisible: true,
     };
+  },
+  computed: {
+    filteredEmployees() {
+      return this.employees.filter(employee =>
+        employee.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
+  },
+  mounted(){
+    this.fetchEmployees();
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll);
+  },
+  methods: {
+    openAddEmployeeModal() {
+  console.log('Opening modal...');
+  this.isAddEmployeeModalVisible = true;
+  console.log('Modal visibility:', this.isAddEmployeeModalVisible);
+},
+    openEditEmployeeModal(employee) {
+      // 打开编辑员工弹窗的逻辑
+    },
+    confirmDelete(employee) {
+      if (confirm('确定要删除该员工吗？')) {
+        this.employees = this.employees.filter(emp => emp.id !== employee.id);
+      }
+    },
+    openImportModal() {
+      // 打开批量导入弹窗的逻辑
+    },
+    fetchEmployees() {
+      this.loadingMore = true;
+      axios.get(`/api/employees?page=${this.page}&pageSize=${this.pageSize}`)
+        .then(response => {
+          this.employees = this.employees.concat(response.data.employees);
+          this.page++;
+          this.loadingMore = false;
+        })
+        .catch(error => {
+          console.error('Error fetching employees:', error);
+          this.loadingMore = false;
+        });
+    },
+    handleSearch() {
+      // 现有搜索逻辑
+    },
+    handleAdvancedSearch() {
+      // 高级搜索逻辑
+    },
+    handleScroll() {
+      if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) {
+        return;
+      }
+      this.fetchEmployees();
+    },
+    handleEmployeeAdded(newEmployee) {
+      // 将新员工添加到列表中
+      this.employees.unshift(newEmployee);
+      // 可以显示一个成功提示
+      alert('员工添加成功！');
+    }
   }
-});
+}
 </script>
 
-<style>
-.el-upload-dragger {
-  font-size: 48px;
-  color: #40a9ff;
+<style scoped>
+/* 容器样式 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-.el-upload-text {
-  margin: 0 0 4px;
-  color: #000000d9;
+/* 搜索框样式 */
+input[type="text"] {
+  width: 300px;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* 操作按钮样式 */
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+button.bg-blue-500:hover {
+  background-color: #2563eb;
+}
+
+button.bg-green-500 {
+  background-color: #10b981;
+}
+
+button.bg-green-500:hover {
+  background-color: #059669;
+}
+
+/* 表格样式 */
+.table-container {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th,td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+}
+
+tr:hover {
+  background-color: #f8fafc;
+}
+
+/* 操作按钮（编辑、删除）样式 */
+button.text-blue-500 {
+  color: #3b82f6;
+}
+
+button.text-blue-500:hover {
+  color: #2563eb;
+}
+
+button.text-red-500 {
+  color: #ef4444;
+}
+
+button.text-red-500:hover {
+  color: #dc2626;
+}
+
+/* 分页按钮样式 */
+button.bg-gray-200 {
+  background-color: #edf2f7;
+}
+
+button.bg-gray-200:hover {
+  background-color: #e2e8f0;
+}
+
+/* 容器样式 */
+.flex {
+  display: flex;
+}
+
+/* 元素右对齐 */
+.justify-end {
+  justify-content: flex-end;
+}
+
+/* 元素垂直居中 */
+.items-center {
+  align-items: center;
+}
+
+/* 输入框样式 */
+.border {
+  border: 1px solid #ccc;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.rounded {
+  border-radius: 0.25rem;
+}
+
+/* 按钮样式 */
+.bg-blue-500 {
+  background-color: #3490dc;
+}
+
+.bg-green-500 {
+  background-color: #48bb78;
+}
+
+.text-white {
+  color: white;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 16px;
+  color: #333;
+  z-index: 1000;
 }
 
-.el-upload-hint {
-  color: #00000073;
-  font-size: 14px;
-}
+
 </style>

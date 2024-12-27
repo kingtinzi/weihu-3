@@ -1,6 +1,6 @@
 <template>
     <div class="bottom-navbar">
-      <div class="nav-item" :class="{ active: activeTab === 'home' }" @click="setActiveTab('home')">
+      <div class="nav-item" :class="{ active: activeTab === 'home' }" @click="setActiveTab('/home')">
         <el-icon :size="24"><HomeFilled /></el-icon>
         <span class="nav-label">首页</span>
       </div>

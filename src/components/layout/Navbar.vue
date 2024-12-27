@@ -18,7 +18,7 @@
           <span class="user-name">{{ userName }}</span>
         </div>
         <button class="logout-btn" @click="confirmLogout">
-          <span class="icon">&#x23FB;</span>
+          <img src="@/assets/out.png" />
         </button>
       </div>
       <div v-if="isDropdownOpen" class="overlay" @click="closeDropdown"></div>

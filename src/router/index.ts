@@ -3,6 +3,7 @@ import Login from '@/Auth/Login.vue'  // 导入Login组件
 import { useUserStore } from '@/store/modules/user'
 import Home from '@/Home.vue'
 import Employee from '@/Auth/EmployeeManagement.vue'
+import AddEmployee from '@/Auth/AddEmployee.vue';
 
 // 定义路由规则
 const routes: Array<RouteRecordRaw> = [
